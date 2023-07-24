@@ -1,12 +1,28 @@
 import 'package:flutter/material.dart';
 
 class TextInput extends StatefulWidget {
-  final String label;
+  final String labelText;
+  final String hintText;
+  final String errorText;
+  final bool obscureText;
+  final String? Function(String?) validator;
+  final Function(String?) onSaved;
 
   const TextInput({
     super.key,
-    required this.label,
+    this.labelText = '',
+    this.hintText = '',
+    this.errorText = '',
+    this.obscureText = false,
+    this.validator = validatorDefaultFuction,
+    this.onSaved = savedDefaultFuction,
   });
+
+  static String? validatorDefaultFuction(String? val) {
+    return null;
+  }
+
+  static void savedDefaultFuction(String? val) {}
 
   @override
   State<TextInput> createState() => _TextInputState();
@@ -14,7 +30,10 @@ class TextInput extends StatefulWidget {
 
 class _TextInputState extends State<TextInput> {
   late FocusNode myFocusNode;
+  final TextEditingController _controller = TextEditingController();
+
   bool isActive = false;
+  bool hasError = false;
 
   @override
   void initState() {
@@ -32,6 +51,11 @@ class _TextInputState extends State<TextInput> {
   Widget build(BuildContext context) {
     Color outlineColor = Colors.grey.shade300;
     Color inputBgColor = isActive ? Colors.transparent : Colors.grey.shade300;
+
+    if (hasError) {
+      outlineColor = isActive ? Colors.red.shade300 : Colors.red.shade100;
+      inputBgColor = isActive ? Colors.transparent : Colors.red.shade100;
+    }
 
     return GestureDetector(
       onTap: () {
@@ -51,26 +75,29 @@ class _TextInputState extends State<TextInput> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.label,
+                  widget.labelText,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.grey.shade800),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 6),
-                  child: TextField(
+                  child: TextFormField(
+                      controller: _controller,
                       textCapitalization: TextCapitalization.sentences,
                       focusNode: myFocusNode,
+                      validator: (value) {
+                        setState(() {
+                          hasError = widget.validator(value) != null;
+                        });
+                        return widget.validator(value);
+                      },
+                      onSaved: widget.onSaved,
                       onTap: () {
                         setState(() {
                           isActive = true;
                         });
                       },
-                      // onTapOutside: (event) {
-                      //   setState(() {
-                      //     isActive = false;
-                      //     myFocusNode.unfocus();
-                      //   });
-                      // },
+                      // TODO: tap outside should blur input
                       style: const TextStyle(fontSize: 18),
                       decoration: const InputDecoration(
                         isDense: true,
