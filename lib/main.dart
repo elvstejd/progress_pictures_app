@@ -7,9 +7,8 @@ void main() {
   runApp(const MyApp());
 }
 
-final _router = GoRouter(routes: [
-  GoRoute(path: '/', builder: ((context, state) => const HomePage()))
-]);
+final _router = GoRouter(
+    routes: [GoRoute(path: '/', builder: ((context, state) => HomePage()))]);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
