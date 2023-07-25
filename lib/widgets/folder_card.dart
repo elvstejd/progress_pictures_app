@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class CollectionCard extends StatelessWidget {
+class FolderCard extends StatelessWidget {
   final String title;
   final String date;
   final int entries;
 
-  const CollectionCard({
+  const FolderCard({
     super.key,
     required this.title,
     required this.date,
